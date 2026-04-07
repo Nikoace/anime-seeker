@@ -1,0 +1,1 @@
+/home/niko/hobby/gstack-demo-project/.claude/skills/gstack/qa-only/SKILL.md

@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+httpx
+feedparser
+cachetools
+pydantic
+pytest
+pytest-asyncio
+respx
