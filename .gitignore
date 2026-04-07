@@ -12,6 +12,9 @@ frontend/out/
 
 # gstack (keep as gitignore, not submodule)
 .claude/skills/gstack/
+.claude/
+CLAUDE.md
+frontend/CLAUDE.md
 
 # misc
 .DS_Store

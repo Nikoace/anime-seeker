@@ -1,1 +1,0 @@
-/home/niko/hobby/gstack-demo-project/.claude/skills/gstack/open-gstack-browser/SKILL.md

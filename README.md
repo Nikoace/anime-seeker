@@ -39,6 +39,9 @@ npm run dev
 # 访问 http://localhost:3000
 ```
 
+如果你是在 Windows + WSL 开发，前端需要监听 `0.0.0.0` 才能稳定从 Windows 浏览器访问。
+当前项目的 `npm run dev` 已经默认按这个方式启动；如果端口转发异常，也可以直接访问 WSL IP，例如 `http://172.x.x.x:3000`。
+
 ## 运行测试
 
 ```bash
