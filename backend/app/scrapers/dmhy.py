@@ -32,7 +32,7 @@ def parse_dmhy_item(item: dict) -> Optional[Torrent]:
 async def fetch_dmhy(query: str) -> tuple[list[Torrent], Optional[SourceError]]:
     url = DMHY_RSS.format(query=query)
     try:
-        async with httpx.AsyncClient(headers=HEADERS, timeout=10) as client:
+        async with httpx.AsyncClient(headers=HEADERS, timeout=5) as client:
             resp = await client.get(url)
             resp.raise_for_status()
         feed = feedparser.parse(resp.text)

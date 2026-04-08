@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import APIRouter
 import httpx
 from app.models import AnimeTheme
@@ -42,27 +43,28 @@ async def get_themes(bangumi_id: int):
     if not candidates:
         return []
 
-    # 逐个尝试候选名称，直到找到匹配
-    raw_anime = []
-    async with httpx.AsyncClient(headers=HEADERS, timeout=15) as client:
-        for name in candidates:
-            resp = await client.get(
-                f"{ANIMETHEMES_BASE}/anime",
-                params={
-                    "filter[name]": name,
-                    "include": "animethemes.animethemeentries.videos,animethemes.song.artists",
-                    "fields[anime]": "name",
-                    "fields[animetheme]": "id,slug,type,sequence",
-                    "fields[song]": "title",
-                    "fields[artist]": "name",
-                    "fields[video]": "link",
-                },
-            )
-            if resp.status_code == 200:
-                result = resp.json().get("anime", [])
-                if result:
-                    raw_anime = result
-                    break
+    # 并行搜索所有候选名称，取第一个有结果的
+    PARAMS = {
+        "include": "animethemes.animethemeentries.videos,animethemes.song.artists",
+        "fields[anime]": "name",
+        "fields[animetheme]": "id,slug,type,sequence",
+        "fields[song]": "title",
+        "fields[artist]": "name",
+        "fields[video]": "link",
+    }
+
+    async def _search_one(client: httpx.AsyncClient, name: str) -> list:
+        resp = await client.get(
+            f"{ANIMETHEMES_BASE}/anime",
+            params={"filter[name]": name, **PARAMS},
+        )
+        if resp.status_code == 200:
+            return resp.json().get("anime", [])
+        return []
+
+    async with httpx.AsyncClient(headers=HEADERS, timeout=10) as client:
+        search_results = await asyncio.gather(*[_search_one(client, name) for name in candidates])
+    raw_anime = next((r for r in search_results if r), [])
 
     themes: list[AnimeTheme] = []
     for anime in raw_anime:

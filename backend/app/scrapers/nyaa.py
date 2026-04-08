@@ -29,7 +29,7 @@ def parse_nyaa_item(item: dict) -> Optional[Torrent]:
 async def fetch_nyaa(query: str) -> tuple[list[Torrent], Optional[SourceError]]:
     url = NYAA_RSS.format(query=query)
     try:
-        async with httpx.AsyncClient(headers=HEADERS, timeout=10) as client:
+        async with httpx.AsyncClient(headers=HEADERS, timeout=5) as client:
             resp = await client.get(url)
             resp.raise_for_status()
         feed = feedparser.parse(resp.text)

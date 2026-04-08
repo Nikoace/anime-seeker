@@ -33,7 +33,7 @@ def parse_acgrip_item(item: dict) -> Optional[Torrent]:
 async def fetch_acgrip(bangumi_id: int) -> tuple[list[Torrent], Optional[SourceError]]:
     url = ACG_RSS.format(bangumi_id=bangumi_id)
     try:
-        async with httpx.AsyncClient(headers=HEADERS, timeout=10) as client:
+        async with httpx.AsyncClient(headers=HEADERS, timeout=5) as client:
             resp = await client.get(url)
             resp.raise_for_status()
         feed = feedparser.parse(resp.text)

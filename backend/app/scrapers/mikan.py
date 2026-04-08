@@ -34,7 +34,7 @@ async def fetch_mikan(query: str) -> tuple[list[Torrent], Optional[SourceError]]
     """Best-effort: may fail on non-Japanese IPs due to Cloudflare."""
     url = MIKAN_RSS.format(query=query)
     try:
-        async with httpx.AsyncClient(headers=HEADERS, timeout=10) as client:
+        async with httpx.AsyncClient(headers=HEADERS, timeout=5) as client:
             resp = await client.get(url)
             if resp.status_code in (403, 503):
                 return [], SourceError(source="mikan", error=f"Blocked (HTTP {resp.status_code})")
