@@ -20,3 +20,5 @@ frontend/CLAUDE.md
 .DS_Store
 *.env
 .env.local
+.gstack/
+frontend/.gstack-screenshots/
