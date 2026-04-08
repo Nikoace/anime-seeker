@@ -19,8 +19,8 @@ async function PopularAnime() {
 
   return (
     <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-      {animes.map((a) => (
-        <AnimeCard key={a.id} anime={a} />
+      {animes.map((a, i) => (
+        <AnimeCard key={a.id} anime={a} priority={i === 0} />
       ))}
     </div>
   );
@@ -60,11 +60,20 @@ export default async function HomePage({
   const { q } = await searchParams;
 
   return (
-    <main className="container mx-auto px-4 py-8 max-w-5xl">
-      <div className="flex flex-col items-center gap-6 mb-10">
-        <h1 className="text-3xl font-bold tracking-tight">动画 BT 聚合</h1>
+    <main className="max-w-5xl mx-auto">
+      <div className={`flex flex-col items-center gap-4 px-4 bg-gradient-to-b from-zinc-950 to-zinc-900 rounded-b-2xl ${q ? "py-5 mb-6" : "py-14 mb-8"}`}>
+        {!q && (
+          <div className="flex flex-col items-center gap-1">
+            <h1 className="text-4xl font-bold tracking-tight text-white">动画 BT 聚合</h1>
+            <p className="text-zinc-400 text-sm">聚合 Nyaa · ACG.RIP · 动漫花园 · 蜜柑计划</p>
+          </div>
+        )}
+        {q && (
+          <h1 className="text-xl font-bold text-white tracking-tight">动画 BT 聚合</h1>
+        )}
         <SearchBar defaultValue={q ?? ""} />
       </div>
+      <div className="px-4">
 
       {q ? (
         <>
@@ -85,6 +94,7 @@ export default async function HomePage({
           </Suspense>
         </>
       )}
+      </div>
     </main>
   );
 }

@@ -14,14 +14,14 @@ export function SearchBar({ defaultValue = "" }: { defaultValue?: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-xl">
+    <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-2xl">
       <Input
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="搜索动画名称（中文或日文）..."
-        className="flex-1"
+        className="flex-1 h-11 text-base"
       />
-      <Button type="submit">搜索</Button>
+      <Button type="submit" className="h-11 px-6 text-base">搜索</Button>
     </form>
   );
 }

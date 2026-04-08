@@ -2,9 +2,9 @@ import Link from "next/link";
 import Image from "next/image";
 import type { AnimeSearchResult, AnimeDetail } from "@/types";
 
-type Props = { anime: AnimeSearchResult | AnimeDetail };
+type Props = { anime: AnimeSearchResult | AnimeDetail; priority?: boolean };
 
-export function AnimeCard({ anime }: Props) {
+export function AnimeCard({ anime, priority = false }: Props) {
   const title = anime.name_cn || anime.name;
   const image = anime.image?.replace("http://", "https://") ?? null;
   return (
@@ -18,6 +18,7 @@ export function AnimeCard({ anime }: Props) {
             src={image}
             alt={title}
             fill
+            priority={priority}
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 768px) 50vw, 200px"
           />

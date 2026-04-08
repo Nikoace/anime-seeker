@@ -1,11 +1,11 @@
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { api } from "@/lib/api";
 import { ThemePlayer } from "@/components/ThemePlayer";
 import { TorrentList } from "@/components/TorrentList";
 import { Badge } from "@/components/ui/badge";
-import { SearchBar } from "@/components/SearchBar";
 
 async function ThemesSection({ id }: { id: number }) {
   const themes = await api.getAnimeThemes(id).catch(() => []);
@@ -15,15 +15,22 @@ async function ThemesSection({ id }: { id: number }) {
 async function MusicSection({ id }: { id: number }) {
   const music = await api.getAnimeMusic(id).catch(() => []);
   if (music.length === 0) return null;
+  const shown = music.slice(0, 8);
+  const rest = music.length - shown.length;
   return (
     <section className="mb-8">
       <h2 className="text-xl font-semibold mb-3">原声带 (OST)</h2>
       <div className="flex flex-wrap gap-2">
-        {music.map((m) => (
-          <Badge key={m.id} variant="outline">
+        {shown.map((m) => (
+          <Badge key={m.id} variant="outline" className="text-xs">
             {m.name_cn || m.name}
           </Badge>
         ))}
+        {rest > 0 && (
+          <Badge variant="secondary" className="text-xs text-muted-foreground">
+            +{rest} 更多
+          </Badge>
+        )}
       </div>
     </section>
   );
@@ -53,8 +60,13 @@ export default async function AnimePage({
 
   return (
     <main className="container mx-auto px-4 py-8 max-w-5xl">
-      <div className="mb-6">
-        <SearchBar />
+      <div className="mb-6 flex items-center gap-3">
+        <Link
+          href="/"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+        >
+          ← 返回搜索
+        </Link>
       </div>
 
       {/* 顶部信息 */}
