@@ -65,9 +65,21 @@ pytest tests/ -v
 - **后端**：推荐 [Render.com](https://render.com) 免费层，首次请求有 30-60 秒冷启动延迟（15 分钟无流量后休眠）
 - **前端**：推荐 [Vercel](https://vercel.com) 免费层，设置环境变量 `NEXT_PUBLIC_API_URL` 为后端地址
 
+## 缓存策略
+
+| 数据类型 | 后端 TTL | 前端 revalidate | 说明 |
+|---|---|---|---|
+| 番剧基础信息 / 音乐 | 1 小时 | 1 小时 | Bangumi 数据几乎不变 |
+| OP/ED 主题曲 | 6 小时 | 6 小时 | AnimeThemes 数据极稳定 |
+| 种子聚合 | 1 小时 | 1 小时 | 每小时重新爬取四个源 |
+| 搜索结果 | 不缓存 | 30 秒 | 允许新番及时出现 |
+
+后端使用内存 TTLCache（cachetools），重启后缓存清空。
+
 ## 注意
 
 - 蜜柑计划（mikanani.me）有 Cloudflare 防护，非日本 IP 可能被拦截，失败时静默忽略
+- 各爬虫 timeout 为 5 秒，超时视为该源不可用，不影响其他源结果
 - 本工具仅作学习用途
 
 ## License
