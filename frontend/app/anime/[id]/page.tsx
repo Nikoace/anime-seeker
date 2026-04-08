@@ -49,6 +49,7 @@ export default async function AnimePage({
   if (!anime) notFound();
 
   const title = anime.name_cn || anime.name;
+  const image = anime.image?.replace("http://", "https://") ?? null;
 
   return (
     <main className="container mx-auto px-4 py-8 max-w-5xl">
@@ -59,9 +60,9 @@ export default async function AnimePage({
       {/* 顶部信息 */}
       <div className="flex gap-6 mb-8">
         <div className="relative w-40 h-56 shrink-0 rounded-lg overflow-hidden border bg-muted">
-          {anime.image && (
+          {image && (
             <Image
-              src={anime.image}
+              src={image}
               alt={title}
               fill
               className="object-cover"

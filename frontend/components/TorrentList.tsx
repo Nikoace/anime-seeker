@@ -27,11 +27,13 @@ export function TorrentList({ data }: { data: TorrentsResponse }) {
     setTimeout(() => setCopied(null), 2000);
   }
 
+  const realErrors = data.errors.filter((e) => e.error);
+
   if (data.torrents.length === 0) {
     return (
       <div className="text-sm text-muted-foreground space-y-1">
         <p>暂无种子数据</p>
-        {data.errors.map((e) => (
+        {realErrors.map((e) => (
           <p key={e.source} className="text-xs text-destructive">
             {SOURCE_LABELS[e.source] ?? e.source}: {e.error}
           </p>

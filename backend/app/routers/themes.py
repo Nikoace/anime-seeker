@@ -8,15 +8,27 @@ ANIMETHEMES_BASE = "https://api.animethemes.moe"
 HEADERS = {"User-Agent": "anime-bt-aggregator/0.1"}
 
 
-async def _get_bangumi_name(subject_id: int) -> str:
+def _extract_ascii_aliases(infobox: list) -> list[str]:
+    """从 Bangumi infobox 别名中提取所有 ASCII 别名（英文/罗马字）"""
+    for item in infobox:
+        if item.get("key") == "别名":
+            aliases = item.get("value", [])
+            if isinstance(aliases, list):
+                return [a.get("v", "") for a in aliases if a.get("v", "").isascii() and a.get("v", "")]
+    return []
+
+
+async def _get_bangumi_names(subject_id: int) -> tuple[str, list[str]]:
+    """返回 (日文名, ASCII别名列表)"""
     key = f"detail:{subject_id}"
     if key in bangumi_cache:
-        return bangumi_cache[key].name
+        return bangumi_cache[key].name, []
     async with httpx.AsyncClient(headers=HEADERS, timeout=10) as client:
         resp = await client.get(f"https://api.bgm.tv/v0/subjects/{subject_id}")
         if resp.status_code == 200:
-            return resp.json().get("name", "")
-    return ""
+            raw = resp.json()
+            return raw.get("name", ""), _extract_ascii_aliases(raw.get("infobox", []))
+    return "", []
 
 
 @router.get("/{bangumi_id}", response_model=list[AnimeTheme])
@@ -25,27 +37,35 @@ async def get_themes(bangumi_id: int):
     if cache_key in themes_cache:
         return themes_cache[cache_key]
 
-    anime_name = await _get_bangumi_name(bangumi_id)
-    if not anime_name:
+    jp_name, ascii_aliases = await _get_bangumi_names(bangumi_id)
+    candidates = ascii_aliases + ([jp_name] if jp_name else [])
+    if not candidates:
         return []
 
-    params = {
-        "filter[name]": anime_name,
-        "include": "animethemes.animethemeentries.videos,animethemes.song.artists",
-        "fields[anime]": "name",
-        "fields[animetheme]": "id,slug,type,sequence",
-        "fields[song]": "title",
-        "fields[artist]": "name",
-        "fields[video]": "link",
-    }
+    # 逐个尝试候选名称，直到找到匹配
+    raw_anime = []
     async with httpx.AsyncClient(headers=HEADERS, timeout=15) as client:
-        resp = await client.get(f"{ANIMETHEMES_BASE}/anime", params=params)
-        if resp.status_code != 200:
-            return []
-        raw = resp.json()
+        for name in candidates:
+            resp = await client.get(
+                f"{ANIMETHEMES_BASE}/anime",
+                params={
+                    "filter[name]": name,
+                    "include": "animethemes.animethemeentries.videos,animethemes.song.artists",
+                    "fields[anime]": "name",
+                    "fields[animetheme]": "id,slug,type,sequence",
+                    "fields[song]": "title",
+                    "fields[artist]": "name",
+                    "fields[video]": "link",
+                },
+            )
+            if resp.status_code == 200:
+                result = resp.json().get("anime", [])
+                if result:
+                    raw_anime = result
+                    break
 
     themes: list[AnimeTheme] = []
-    for anime in raw.get("anime", []):
+    for anime in raw_anime:
         for theme in anime.get("animethemes", []):
             video_url = None
             entries = theme.get("animethemeentries", [])

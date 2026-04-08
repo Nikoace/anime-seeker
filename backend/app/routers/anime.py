@@ -27,7 +27,7 @@ async def search_anime(q: str = Query(..., min_length=1)):
             id=item["id"],
             name=item.get("name", ""),
             name_cn=item.get("name_cn") or item.get("name", ""),
-            image=item.get("images", {}).get("common", ""),
+            image=item.get("images", {}).get("common", "").replace("http://", "https://", 1),
             air_date=item.get("air_date"),
             eps=item.get("eps"),
             rank=item.get("rank"),
@@ -58,7 +58,7 @@ async def get_anime_detail(subject_id: int):
         name=raw.get("name", ""),
         name_cn=raw.get("name_cn") or raw.get("name", ""),
         summary=raw.get("summary", ""),
-        image=raw.get("images", {}).get("common", ""),
+        image=raw.get("images", {}).get("common", "").replace("http://", "https://", 1),
         tags=raw.get("tags", []),
         rating=raw.get("rating"),
         air_date=raw.get("date"),
@@ -86,7 +86,7 @@ async def get_anime_music(subject_id: int):
             id=item["id"],
             name=item.get("name", ""),
             name_cn=item.get("name_cn") or item.get("name", ""),
-            image=item.get("images", {}).get("common", ""),
+            image=item.get("images", {}).get("common", "").replace("http://", "https://", 1),
         )
         for item in raw
         if item.get("type") == 3

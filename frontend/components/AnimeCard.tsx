@@ -6,15 +6,16 @@ type Props = { anime: AnimeSearchResult | AnimeDetail };
 
 export function AnimeCard({ anime }: Props) {
   const title = anime.name_cn || anime.name;
+  const image = anime.image?.replace("http://", "https://") ?? null;
   return (
     <Link
       href={`/anime/${anime.id}`}
       className="group block rounded-lg overflow-hidden border hover:border-primary transition-colors"
     >
       <div className="relative aspect-[3/4] bg-muted">
-        {anime.image ? (
+        {image ? (
           <Image
-            src={anime.image}
+            src={image}
             alt={title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
